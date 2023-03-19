@@ -8,6 +8,7 @@ REQUEST_PV_LIST = "getAllPVs"
 REQUEST_CONSOLIDATE = "consolidateDataForPV"
 REQUEST_PAUSE = "pauseArchivingPV"
 REQUEST_RESUME = "resumeArchivingPV"
+REQUEST_DETAILS = "getPVDetails"
 
 class Archiver():
     """ Class definition """
@@ -71,3 +72,11 @@ class Archiver():
         pv_names = self.get_pv_list()
         for pv_name in pv_names:
             self.consolidate_data(pv_name=pv_name, target_storage=target)
+
+    def get_pv_details(self, pv_name):
+        """ Get PV Details. """
+        request = requests.get(url=self.mgmt_url + REQUEST_DETAILS, params={"pv": pv_name})
+        if request.status_code != 200:
+            return None
+
+        return json.loads(request.text)
