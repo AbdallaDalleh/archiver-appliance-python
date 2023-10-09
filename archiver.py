@@ -59,7 +59,7 @@ class Archiver():
             print(f"PV {pv_name} was not paused successfully.")
             return
 
-        request = requests.get(url=self.mgmt_url + REQUEST_CONSOLIDATE, params={"pv": pv_name, "storage": target_storage}, timeout=-1)
+        request = requests.get(url=self.mgmt_url + REQUEST_CONSOLIDATE, params={"pv": pv_name, "storage": target_storage})
         if request.status_code != 200:
             print(f"Consolidation for PV {pv_name} failed.")
 
@@ -71,6 +71,7 @@ class Archiver():
         """ Consolidate all PVs in the server to the target storage (LTS by default) """
         pv_names = self.get_pv_list()
         for pv_name in pv_names:
+            print("Consolidating data for PV %s" % pv_name)
             self.consolidate_data(pv_name=pv_name, target_storage=target)
 
     def get_pv_details(self, pv_name):
