@@ -9,6 +9,7 @@ REQUEST_CONSOLIDATE = "consolidateDataForPV"
 REQUEST_PAUSE = "pauseArchivingPV"
 REQUEST_RESUME = "resumeArchivingPV"
 REQUEST_DETAILS = "getPVDetails"
+REQUEST_ADD_PV = "archivePV"
 
 class Archiver():
     """ Class definition """
@@ -81,3 +82,14 @@ class Archiver():
             return None
 
         return json.loads(request.text)
+
+    def archive_pv(self, pv_name, period, method="MONITOR"):
+        """ Archive new PV. """
+        request = requests.get(url=self.mgmt_url + REQUEST_ADD_PV, params={"pv": pv_name, "samplingperiod": period, "samplingmethod": method})
+        if request.status_code != 200:
+            print(f"PV {pv_name} was not added successfully.")
+            return False
+
+        print(f"PV {pv_name} added successfully.")
+        return True
+
