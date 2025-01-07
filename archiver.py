@@ -10,6 +10,7 @@ REQUEST_PAUSE = "pauseArchivingPV"
 REQUEST_RESUME = "resumeArchivingPV"
 REQUEST_DETAILS = "getPVDetails"
 REQUEST_ADD_PV = "archivePV"
+REQUEST_DELETE = "deletePV"
 
 class Archiver():
     """ Class definition """
@@ -51,6 +52,13 @@ class Archiver():
             return False
         return True
 
+    def delete_pv(self, pv_name, delete_data = False):
+        """ Delete a PV. """
+        request = requests.get(url=self.mgmt_url + REQUEST_DELETE, params={"pv": pv_name, "deletData": delete_data})
+        if request.status_code != 200:
+            return False
+        return True
+
     def consolidate_data(self, pv_name, target_storage):
         """ Consolidate the PV to the target storage. """
         if pv_name == "" or target_storage == "":
@@ -68,12 +76,22 @@ class Archiver():
             print(f"PV {pv_name} was not resumed successfully.")
             return
 
-    def consolidate_all(self, target="LTS"):
+        # print(f"PV {pv_name} consolidated successfully.")
+
+    def consolidate_all(self, target="LTS", show_report=False):
         """ Consolidate all PVs in the server to the target storage (LTS by default) """
         pv_names = self.get_pv_list()
+        total = len(pv_names)
+        i = 0
         for pv_name in pv_names:
-            print("Consolidating data for PV %s" % pv_name)
+            i = i + 1
+            if show_report:
+                print("Finished %d / %d, %.3f %%\r" % (i, total, 100 * i / total), end="")
+            else:
+                print("Consolidating data for PV %s" % pv_name)
             self.consolidate_data(pv_name=pv_name, target_storage=target)
+
+        print("")
 
     def get_pv_details(self, pv_name):
         """ Get PV Details. """
